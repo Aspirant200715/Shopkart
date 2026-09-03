@@ -18,13 +18,13 @@ export const registerCustomer = async (req, res) => {
     const customerexists = await Customer.findOne({ fullname });
 
     if (customerexists) {
-      res.status(400).json({ message: "Customer already exists" });
+      return res.status(400).json({ message: "Customer already exists" });
     }
 
     const emailexists = await Customer.findOne({ email });
 
     if (emailexists) {
-      res.status(409).json({ message: "Email_id already exists" });
+      return res.status(409).json({ message: "Email_id already exists" });
     }
 
     if (password.length <= 6) {
@@ -44,11 +44,6 @@ export const registerCustomer = async (req, res) => {
       email,
       phone,
     });
-
-    //Generate jwt
-    const token = gentoken(newCustomer._id);
-    console.log(token);
-    res.cookie("token", token, cokkieOptions);
 
     return res.status(201).json({
       success: true,
@@ -87,7 +82,7 @@ export const LoginCustomer = async (req, res) => {
       });
     }
     const token = gentoken(Customerexists._id);
-    console.log(token);
+    // console.log(token);
     res.cookie("token", token, cokkieOptions);
 
     return res.status(200).json({
@@ -107,7 +102,15 @@ export const LoginCustomer = async (req, res) => {
 };
 
 export const getCustomer = (req, res) => {
-  console.log(req.user);
+  return res.status(200).json({
+    success: true,
+    customer: {
+      _id: req.user._id,
+      fullname: req.user.fullname,
+      email: req.user.email,
+      phone: req.user.phone,
+    },
+  });
 };
 
 export const logoutCustomer = (req, res) => {
@@ -129,7 +132,7 @@ export const changedPassword = async (req, res) => {
       });
     }
 
-    const isCorrect = await bcrypt.compareSync(oldPassword, req.user.password);
+    const isCorrect = bcrypt.compareSync(oldPassword, req.user.password);
 
     if (!isCorrect) {
       return res.status(401).json({ message: "Old password is incorrect" });
@@ -141,13 +144,13 @@ export const changedPassword = async (req, res) => {
         .json({ message: "password length must be 6 characters or more" });
     }
     const salt = await bcrypt.genSalt(10);
-    const newHashedPassword = await bcrypt.hashSync(newPassword, salt);
+    const newHashedPassword = bcrypt.hashSync(newPassword, salt);
 
     //update original password
     req.user.password = newHashedPassword;
     await req.user.save();
 
-    return res.status(200).json({ message: "Password upadted succesfully" });
+    return res.status(200).json({ message: "Password updated succesfully" });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
