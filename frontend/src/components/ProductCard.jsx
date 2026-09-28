@@ -1,0 +1,41 @@
+import { Link } from "react-router-dom";
+import formatPrice from "../utils/formatPrice";
+
+function ProductCard({ product }) {
+  const isOutOfStock = product.stock === 0;
+
+  return (
+    <article className="catalog-card">
+      <div className="catalog-image-wrap">
+        <img
+          className="catalog-image"
+          src={product.image}
+          alt=""
+          onError={(event) => event.currentTarget.remove()}
+        />
+        <span className={`stock-chip ${isOutOfStock ? "stock-chip-out" : ""}`}>
+          {isOutOfStock ? "Sold out" : "In stock"}
+        </span>
+      </div>
+      <div className="catalog-info">
+        <p className="catalog-category">{product.category}</p>
+        <h2>{product.name}</h2>
+        <p className="catalog-description">{product.description}</p>
+        <div className="catalog-meta">
+          <strong>{formatPrice(product.price)}</strong>
+          <span>
+            {isOutOfStock ? "Unavailable" : `${product.stock} units left`}
+          </span>
+        </div>
+        <Link
+          className="primary-btn small-btn catalog-link"
+          to={`/products/${product._id}`}
+        >
+          View details <span aria-hidden="true">-&gt;</span>
+        </Link>
+      </div>
+    </article>
+  );
+}
+
+export default ProductCard;

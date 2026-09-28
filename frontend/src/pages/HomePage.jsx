@@ -11,12 +11,6 @@ const collections = [
 
 const products = [
   {
-    name: "Aura Chair",
-    category: "Furniture",
-    price: "$289",
-    accent: "sunset",
-  },
-  {
     name: "Luma Lamp",
     category: "Lighting",
     price: "$129",
@@ -60,6 +54,7 @@ function HomePage() {
 
         <nav className="nav-links">
           <Link to="/">Home</Link>
+          <Link to="/products">Products</Link>
           <Link to="/login">Login</Link>
           <Link to="/signup">Signup</Link>
           <Link to="/logout">Logout</Link>
@@ -92,7 +87,7 @@ function HomePage() {
             </div>
 
             <div className="cta-row">
-              <Link to="/signup" className="primary-btn">
+              <Link to="/products" className="primary-btn">
                 Shop now
               </Link>
               <Link to="/login" className="ghost-btn">
@@ -155,7 +150,7 @@ function HomePage() {
               <p className="eyebrow eyebrow-dark">Popular picks</p>
               <h2>Curated for real life</h2>
             </div>
-            <Link to="/signup" className="mini-link">
+            <Link to="/products" className="mini-link">
               View all
             </Link>
           </div>
