@@ -5,7 +5,8 @@ const productFields = "name description price category image stock createdAt";
 
 export const createProduct = async (req, res) => {
   try {
-    const product = await Product.create(req.body);
+    const { _id, createdAt, updatedAt, ...productData } = req.body;
+    const product = await Product.create(productData);
     return res.status(201).json({ success: true, product });
   } catch (error) {
     if (error.name === "ValidationError") {

@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import customerRoutes from "./routes/customer.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import cors from "cors";
+import wishlistRoutes from "./routes/wishlist.routes.js";
 dotenv.config();
 
 const app = express();
@@ -12,12 +13,18 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: ["http://localhost:5173", "http://127.0.0.1:5173","http://127.0.0.1:5174"],
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5174",
+  ],
   credentials: true,
 }));
 
 app.use("/customers", customerRoutes);
 app.use("/products", productRoutes);
+app.use("/wishlist", wishlistRoutes);
 
 const port = process.env.PORT || 5050;
 

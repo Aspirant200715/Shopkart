@@ -1,8 +1,34 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { addToWishlist } from "../services/productApi";
 import formatPrice from "../utils/formatPrice";
 
 function ProductCard({ product }) {
   const isOutOfStock = product.stock === 0;
+  const [saving, setSaving] = useState(false);
+  const [added, setAdded] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleWishlist = async () => {
+    if (saving || added) return;
+
+    setSaving(true);
+    setError("");
+
+    try {
+      await addToWishlist(product._id);
+      setAdded(true);
+    } catch (requestError) {
+      setError(
+        requestError.response?.status === 409
+          ? "Already in your wishlist."
+          : requestError.response?.data?.message ||
+              "Unable to save product. Please try again.",
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <article className="catalog-card">
@@ -33,6 +59,19 @@ function ProductCard({ product }) {
         >
           View details <span aria-hidden="true">-&gt;</span>
         </Link>
+        <button
+          className="wishlist-action"
+          disabled={saving || added}
+          onClick={handleWishlist}
+          type="button"
+        >
+          {saving
+            ? "Saving..."
+            : added
+              ? "Added to Wishlist"
+              : "Add to Wishlist"}
+        </button>
+        {error && <p className="wishlist-error">{error}</p>}
       </div>
     </article>
   );

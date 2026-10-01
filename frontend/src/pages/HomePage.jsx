@@ -55,6 +55,7 @@ function HomePage() {
         <nav className="nav-links">
           <Link to="/">Home</Link>
           <Link to="/products">Products</Link>
+          <Link to="/wishlist">Wishlist</Link>
           <Link to="/login">Login</Link>
           <Link to="/signup">Signup</Link>
           <Link to="/logout">Logout</Link>

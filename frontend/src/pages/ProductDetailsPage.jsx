@@ -47,6 +47,7 @@ function ProductDetailsPage() {
           <Link className="active-nav" to="/products">
             Products
           </Link>
+          <Link to="/wishlist">Wishlist</Link>
           <Link to="/logout">Logout</Link>
         </nav>
         <Link to="/products" className="ghost-btn small-btn">

@@ -22,6 +22,15 @@ const customerSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  wishlist: {
+    type: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Product"
+        }
+    ],
+    default: []
+}
 });
 
 const Customer = mongoose.model("Customer", customerSchema);

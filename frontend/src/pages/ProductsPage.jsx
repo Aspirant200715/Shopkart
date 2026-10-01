@@ -20,6 +20,7 @@ function StoreHeader() {
         <Link className="active-nav" to="/products">
           Products
         </Link>
+        <Link to="/wishlist">Wishlist</Link>
         <Link to="/logout">Logout</Link>
       </nav>
       <div className="nav-actions">
