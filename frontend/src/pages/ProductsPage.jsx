@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import useAuth from "../context/useAuth";
 import ProductCard from "../components/ProductCard";
 import { fetchProducts } from "../services/productApi";
+import CartNavLink from "../components/CartNavLink";
 
-const categories = ["Electronics", "Fashion", "Books", "Home"];
+const defaultCategories = ["Electronics", "Fashion", "Books", "Home"];
 
 function StoreHeader() {
   const { customer } = useAuth();
@@ -21,6 +22,7 @@ function StoreHeader() {
           Products
         </Link>
         <Link to="/wishlist">Wishlist</Link>
+        <CartNavLink />
         <Link to="/logout">Logout</Link>
       </nav>
       <div className="nav-actions">
@@ -33,13 +35,17 @@ function StoreHeader() {
 }
 
 function ProductsPage() {
+  const [searchParams] = useSearchParams();
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState(searchParams.get("category") || "");
   const [sort, setSort] = useState("");
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const categories = category
+    ? [...new Set([...defaultCategories, category])]
+    : defaultCategories;
 
   useEffect(() => {
     const timer = window.setTimeout(() => setSearch(searchInput.trim()), 350);

@@ -7,15 +7,25 @@ export const AuthProvider = ({ children }) => {
   const [loader, setLoader] = useState(true);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     axiosInstance
-      .get("/customers/me")
+      .get("/customers/me", { signal: controller.signal })
       .then((response) => {
         setCustomer(response.data.customer);
       })
-      .catch(() => setCustomer(null))
+      .catch((error) => {
+        if (error.name !== "CanceledError" && error.code !== "ERR_CANCELED") {
+          setCustomer(null);
+        }
+      })
       .finally(() => {
-        setLoader(false);
+        if (!controller.signal.aborted) {
+          setLoader(false);
+        }
       });
+
+    return () => controller.abort();
   }, []);
 
   return (

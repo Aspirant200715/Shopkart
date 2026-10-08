@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { fetchProduct } from "../services/productApi";
 import formatPrice from "../utils/formatPrice";
+import useCart from "../context/useCart";
+import CartNavLink from "../components/CartNavLink";
 
 function ProductDetailsPage() {
   const { id } = useParams();
@@ -9,6 +11,9 @@ function ProductDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [added, setAdded] = useState(false);
+  const [cartError, setCartError] = useState("");
+  const [adding, setAdding] = useState(false);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -48,6 +53,7 @@ function ProductDetailsPage() {
             Products
           </Link>
           <Link to="/wishlist">Wishlist</Link>
+          <CartNavLink />
           <Link to="/logout">Logout</Link>
         </nav>
         <Link to="/products" className="ghost-btn small-btn">
@@ -104,19 +110,44 @@ function ProductDetailsPage() {
               </div>
               <button
                 className="primary-btn details-cart"
-                disabled={product.stock === 0}
-                onClick={() => setAdded(true)}
+                disabled={product.stock === 0 || adding}
+                onClick={async () => {
+                  setAdding(true);
+                  setCartError("");
+                  try {
+                    await addToCart(product._id);
+                    setAdded(true);
+                  } catch (requestError) {
+                    setCartError(
+                      requestError.response?.data?.message ||
+                        "Unable to add product to cart.",
+                    );
+                  } finally {
+                    setAdding(false);
+                  }
+                }}
                 type="button"
               >
-                {added ? "Added to your cart" : "Add to cart"}
+                {adding
+                  ? "Adding..."
+                  : added
+                    ? "Added to your cart"
+                    : "Add to cart"}
               </button>
               {added && (
-                <p className="added-note">
-                  Nice choice. Cart functionality is coming in the next lab.
-                </p>
+                <div className="added-cart-actions">
+                  <p className="added-note">Added to your cart.</p>
+                  <Link className="view-cart-link" to="/cart">
+                    View cart <span className="arrow-icon arrow-right" aria-hidden="true" />
+                  </Link>
+                </div>
               )}
+              {cartError && <p className="state-error">{cartError}</p>}
               <Link className="details-back" to="/products">
-                &lt;- Continue browsing
+                <svg className="back-arrow" viewBox="0 0 20 20" aria-hidden="true">
+                  <path d="M16 10H4M9 5l-5 5 5 5" />
+                </svg>
+                Continue browsing
               </Link>
             </div>
           </article>

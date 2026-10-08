@@ -3,11 +3,13 @@ import { Link } from "react-router-dom";
 import { addToWishlist } from "../services/productApi";
 import formatPrice from "../utils/formatPrice";
 
-function ProductCard({ product }) {
+function ProductCard({ product, onRemove, removing = false }) {
   const isOutOfStock = product.stock === 0;
+  const isWishlistCard = typeof onRemove === "function";
   const [saving, setSaving] = useState(false);
   const [added, setAdded] = useState(false);
   const [error, setError] = useState("");
+  const [imageFailed, setImageFailed] = useState(!product.image);
 
   const handleWishlist = async () => {
     if (saving || added) return;
@@ -33,12 +35,19 @@ function ProductCard({ product }) {
   return (
     <article className="catalog-card">
       <div className="catalog-image-wrap">
-        <img
-          className="catalog-image"
-          src={product.image}
-          alt=""
-          onError={(event) => event.currentTarget.remove()}
-        />
+        {imageFailed ? (
+          <div className="catalog-image-placeholder" aria-label={product.name}>
+            <span>{product.name.slice(0, 1).toUpperCase()}</span>
+            <small>Shopsy selection</small>
+          </div>
+        ) : (
+          <img
+            className="catalog-image"
+            src={product.image}
+            alt={product.name}
+            onError={() => setImageFailed(true)}
+          />
+        )}
         <span className={`stock-chip ${isOutOfStock ? "stock-chip-out" : ""}`}>
           {isOutOfStock ? "Sold out" : "In stock"}
         </span>
@@ -57,20 +66,31 @@ function ProductCard({ product }) {
           className="primary-btn small-btn catalog-link"
           to={`/products/${product._id}`}
         >
-          View details <span aria-hidden="true">-&gt;</span>
+          View details <span className="arrow-icon arrow-right" aria-hidden="true" />
         </Link>
-        <button
-          className="wishlist-action"
-          disabled={saving || added}
-          onClick={handleWishlist}
-          type="button"
-        >
-          {saving
-            ? "Saving..."
-            : added
-              ? "Added to Wishlist"
-              : "Add to Wishlist"}
-        </button>
+        {isWishlistCard ? (
+          <button
+            className="wishlist-action"
+            disabled={removing}
+            onClick={() => onRemove(product._id)}
+            type="button"
+          >
+            {removing ? "Removing..." : "Remove from Wishlist"}
+          </button>
+        ) : (
+          <button
+            className="wishlist-action"
+            disabled={saving || added}
+            onClick={handleWishlist}
+            type="button"
+          >
+            {saving
+              ? "Saving..."
+              : added
+                ? "Added to Wishlist"
+                : "Add to Wishlist"}
+          </button>
+        )}
         {error && <p className="wishlist-error">{error}</p>}
       </div>
     </article>

@@ -42,26 +42,39 @@ function LoginPage() {
       </header>
 
       <div className="auth-hero">
+        <div className="auth-watermark" aria-hidden="true">S</div>
+        <div className="auth-orbit orbit-one" aria-hidden="true" />
+        <div className="auth-orbit orbit-two" aria-hidden="true" />
+        <div className="auth-sun auth-sun-one" aria-hidden="true" />
+        <div className="auth-sun auth-sun-two" aria-hidden="true" />
         <div className="auth-copy auth-copy-centered">
-          <span className="pill">Curated for bright living</span>
-          <h1>Shop better, live lighter.</h1>
+          <div className="auth-kicker">
+            <span className="auth-kicker-line" />
+            <span>Welcome to Shopsy</span>
+          </div>
+          <h1>
+            Everything you
+            <br />
+            love, in one place.
+          </h1>
           <p>
-            Discover design-led essentials for your home, wardrobe, and everyday
-            flow.
+            Shop thoughtfully selected products for your home, lifestyle, and
+            everyday needs.
           </p>
 
           <div className="auth-visual">
             <div className="auth-showcase-card primary-card">
-              <span>Best seller</span>
+              <span>Featured collection</span>
               <strong>Aura Chair</strong>
-              <small>$289</small>
+              <small>Comfort for every room</small>
             </div>
 
             <div className="auth-showcase-card secondary-card">
-              <span>Fresh drop</span>
-              <strong>Soft textures</strong>
-              <small>New season</small>
+              <span>New arrivals</span>
+              <strong>Daily essentials</strong>
+              <small>Made for your routine</small>
             </div>
+            <div className="auth-note">Free shipping on selected orders</div>
           </div>
 
           <ul className="feature-list">
@@ -73,10 +86,14 @@ function LoginPage() {
       </div>
 
       <div className="auth-card-wrap">
+        <div className="auth-side-label">MEMBERS AREA <span>—</span> 2026</div>
         <div className="auth-card">
           <div className="auth-header">
             <p className="eyebrow">Welcome back</p>
-            <h2>Login to Shopsy</h2>
+            <h2>Welcome back.</h2>
+            <p className="auth-subtitle">
+              Sign in to pick up where you left off.
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form">
@@ -118,14 +135,6 @@ function LoginPage() {
               Login
             </button>
           </form>
-
-          <div className="divider">
-            <span>or</span>
-          </div>
-
-          <button type="button" className="ghost-btn wide-btn social-btn">
-            Continue with Google
-          </button>
 
           <p className="auth-footer">
             New here?{" "}

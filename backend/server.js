@@ -6,6 +6,7 @@ import customerRoutes from "./routes/customer.routes.js";
 import productRoutes from "./routes/product.routes.js";
 import cors from "cors";
 import wishlistRoutes from "./routes/wishlist.routes.js";
+import cartRoutes from "./routes/cart.routes.js";
 dotenv.config();
 
 const app = express();
@@ -25,19 +26,31 @@ app.use(cors({
 app.use("/customers", customerRoutes);
 app.use("/products", productRoutes);
 app.use("/wishlist", wishlistRoutes);
+app.use("/cart", cartRoutes);
 
 const port = process.env.PORT || 5050;
 
 const env = process.env.dbUrl;
 
-mongoose
-  .connect(env)
-  .then(() => {
-    console.log("DB Connected");
-  })
-  .catch((err) => {
-    console.log(err);
+if (!env) {
+  console.error("Missing dbUrl environment variable");
+} else {
+  mongoose
+    .connect(env)
+    .then(() => {
+      console.log("DB Connected");
+    })
+    .catch((err) => {
+      console.error("Database connection failed:", err.message);
+    });
+}
+
+app.get("/health", (_req, res) => {
+  res.status(200).json({
+    success: true,
+    database: mongoose.connection.readyState === 1 ? "connected" : "disconnected",
   });
+});
 
 app.listen(port, (req, res) => {
   console.log(`Server started on port ${port}`);

@@ -1,29 +1,14 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useAuth from "../context/useAuth";
-
-const categories = ["Home", "Women", "Men", "Beauty", "Tech", "Decor"];
-
-const collections = [
-  { name: "Modern Living", tone: "warm", tag: "New season" },
-  { name: "Everyday Luxury", tone: "soft", tag: "Top rated" },
-  { name: "Creative Desk", tone: "cool", tag: "Fresh drop" },
-];
-
-const products = [
-  {
-    name: "Luma Lamp",
-    category: "Lighting",
-    price: "$129",
-    accent: "lavender",
-  },
-  { name: "Nova Bottle", category: "Lifestyle", price: "$48", accent: "lemon" },
-  { name: "Terra Hamper", category: "Home", price: "$94", accent: "mint" },
-];
+import CartNavLink from "../components/CartNavLink";
+import { fetchProducts } from "../services/productApi";
+import formatPrice from "../utils/formatPrice";
 
 const benefits = [
-  { value: "24h", label: "fast dispatch" },
-  { value: "12k+", label: "happy clients" },
-  { value: "4.9", label: "average rating" },
+  { target: 24, suffix: "h", label: "fast dispatch" },
+  { target: 12, suffix: "k+", label: "happy clients" },
+  { target: 4.9, decimals: 1, suffix: "", label: "average rating" },
 ];
 
 const reviews = [
@@ -41,8 +26,84 @@ const reviews = [
   },
 ];
 
+function AnimatedMetric({ target, decimals = 0, suffix = "" }) {
+  const [value, setValue] = useState(() =>
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches ? target : 0,
+  );
+
+  useEffect(() => {
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (reduceMotion) {
+      return undefined;
+    }
+
+    let frameId;
+    const startedAt = performance.now();
+    const duration = 1200;
+
+    const animate = (timestamp) => {
+      const progress = Math.min((timestamp - startedAt) / duration, 1);
+      const easedProgress = 1 - (1 - progress) ** 3;
+      setValue(target * easedProgress);
+
+      if (progress < 1) {
+        frameId = requestAnimationFrame(animate);
+      }
+    };
+
+    frameId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frameId);
+  }, [target]);
+
+  return (
+    <>
+      {value.toFixed(decimals)}
+      {suffix}
+    </>
+  );
+}
+
 function HomePage() {
   const { customer } = useAuth();
+  const [products, setProducts] = useState([]);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [productsError, setProductsError] = useState("");
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    fetchProducts({}, controller.signal)
+      .then((data) => {
+        setProducts(data.products || []);
+        setProductsError("");
+      })
+      .catch((requestError) => {
+        if (
+          requestError.name !== "CanceledError" &&
+          requestError.code !== "ERR_CANCELED"
+        ) {
+          setProductsError("Unable to load the latest products.");
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setProductsLoading(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, []);
+
+  const categories = [...new Set(products.map((product) => product.category))];
+  const collections = categories.slice(0, 3).map((category, index) => ({
+    name: category,
+    tone: ["warm", "soft", "cool"][index],
+    tag: `${products.filter((product) => product.category === category).length} products`,
+  }));
+  const featuredProducts = products.slice(0, 4);
 
   return (
     <div className="home-shell">
@@ -53,33 +114,30 @@ function HomePage() {
         </Link>
 
         <nav className="nav-links">
-          <Link to="/">Home</Link>
+          <Link className="active-nav" to="/">
+            Home
+          </Link>
           <Link to="/products">Products</Link>
           <Link to="/wishlist">Wishlist</Link>
-          <Link to="/login">Login</Link>
-          <Link to="/signup">Signup</Link>
+          <CartNavLink />
           <Link to="/logout">Logout</Link>
         </nav>
 
         <div className="nav-actions">
-          <button type="button" className="ghost-btn small-btn">
-            Search
-          </button>
-          <Link to="/login" className="primary-btn small-btn">
-            Login
-          </Link>
+          <span className="user-greeting">
+            Hi, {customer?.fullname?.split(" ")[0]}
+          </span>
         </div>
       </header>
 
       <main className="landing-page">
         <section className="hero-panel">
           <div className="hero-copy">
-            <span className="pill pill-soft">Fresh essentials</span>
-            <h1>Thoughtful pieces for better living.</h1>
+            <span className="pill pill-soft">New season / 2026</span>
+            <h1>Make room for things you love.</h1>
             <p>
-              Discover elevated home, lifestyle, and wardrobe essentials
-              designed to make your everyday feel lighter, smarter, and
-              beautifully lived in.
+              A considered edit of home, style, and everyday essentials. Find
+              something useful, beautiful, and completely yours.
             </p>
 
             <div className="account-summary">
@@ -91,15 +149,21 @@ function HomePage() {
               <Link to="/products" className="primary-btn">
                 Shop now
               </Link>
-              <Link to="/login" className="ghost-btn">
-                View account
+              <Link to="/wishlist" className="ghost-btn">
+                View wishlist
               </Link>
             </div>
 
             <div className="feature-strip">
               {benefits.map((item) => (
                 <div key={item.label} className="feature-item">
-                  <strong>{item.value}</strong>
+                  <strong>
+                    <AnimatedMetric
+                      target={item.target}
+                      decimals={item.decimals}
+                      suffix={item.suffix}
+                    />
+                  </strong>
                   <span>{item.label}</span>
                 </div>
               ))}
@@ -129,9 +193,13 @@ function HomePage() {
 
         <section className="category-row">
           {categories.map((category) => (
-            <button key={category} type="button" className="category-pill">
+            <Link
+              key={category}
+              to={`/products?category=${encodeURIComponent(category)}`}
+              className="category-pill"
+            >
               {category}
-            </button>
+            </Link>
           ))}
         </section>
 
@@ -140,7 +208,7 @@ function HomePage() {
             <article key={item.name} className={`collection-card ${item.tone}`}>
               <span>{item.tag}</span>
               <h3>{item.name}</h3>
-              <Link to="/signup">Shop now</Link>
+              <Link to="/products">Shop collection <span aria-hidden="true">↗</span></Link>
             </article>
           ))}
         </section>
@@ -156,23 +224,45 @@ function HomePage() {
             </Link>
           </div>
 
-          <div className="product-grid">
-            {products.map((product) => (
-              <article key={product.name} className="product-card">
-                <div className={`product-visual ${product.accent}`}>
-                  <span>New</span>
+          {productsLoading && (
+            <div className="state-panel">
+              <span className="loader-dot" />
+              Loading the latest products...
+            </div>
+          )}
+          {!productsLoading && productsError && (
+            <div className="state-panel state-error">
+              <strong>Products are unavailable right now.</strong>
+              <span>{productsError}</span>
+            </div>
+          )}
+          {!productsLoading && !productsError && featuredProducts.length === 0 && (
+            <div className="state-panel">
+              <strong>No products have been added yet.</strong>
+              <span>New products will appear here as soon as they are created.</span>
+            </div>
+          )}
+          {!productsLoading && !productsError && featuredProducts.length > 0 && (
+            <div className="product-grid">
+            {featuredProducts.map((product) => (
+              <article key={product._id} className="product-card">
+                <div className="product-visual product-visual-live">
+                  <span>{product.stock > 0 ? "In stock" : "Sold out"}</span>
                 </div>
                 <div className="product-info">
                   <p>{product.category}</p>
                   <h3>{product.name}</h3>
                   <div className="product-meta">
-                    <strong>{product.price}</strong>
-                    <button type="button">Add</button>
+                    <strong>{formatPrice(product.price)}</strong>
+                    <Link to={`/products/${product._id}`} className="product-view-link">
+                      Explore <span aria-hidden="true">↗</span>
+                    </Link>
                   </div>
                 </div>
               </article>
             ))}
-          </div>
+            </div>
+          )}
         </section>
 
         <section className="promo-band">
@@ -222,12 +312,9 @@ function HomePage() {
             <h2>Get fresh drops, early access, and exclusive offers.</h2>
           </div>
 
-          <form className="newsletter-form">
-            <input type="email" placeholder="Your email address" />
-            <button type="submit" className="primary-btn">
-              Join now
-            </button>
-          </form>
+          <Link to="/products" className="primary-btn newsletter-cta">
+            Explore the edit <span aria-hidden="true">↗</span>
+          </Link>
         </section>
       </main>
     </div>

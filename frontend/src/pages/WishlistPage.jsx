@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useAuth from "../context/useAuth";
-import formatPrice from "../utils/formatPrice";
 import { fetchWishlist, removeFromWishlist } from "../services/productApi";
+import CartNavLink from "../components/CartNavLink";
+import ProductCard from "../components/ProductCard";
 
 function WishlistPage() {
   const { customer } = useAuth();
@@ -66,6 +67,7 @@ function WishlistPage() {
           <Link className="active-nav" to="/wishlist">
             Wishlist
           </Link>
+          <CartNavLink />
           <Link to="/logout">Logout</Link>
         </nav>
         <div className="nav-actions">
@@ -125,48 +127,15 @@ function WishlistPage() {
         {!loading && !error && wishlist.length > 0 && (
           <section className="wishlist-grid">
             {wishlist.map((product) => {
-              const isOutOfStock = product.stock === 0;
               const isRemoving = removingId === product._id;
 
               return (
-                <article className="wishlist-card" key={product._id}>
-                  <div className="wishlist-image-wrap">
-                    <img
-                      className="wishlist-image"
-                      src={product.image}
-                      alt={product.name}
-                      onError={(event) => event.currentTarget.remove()}
-                    />
-                  </div>
-                  <div className="wishlist-info">
-                    <p className="catalog-category">{product.category}</p>
-                    <h2>{product.name}</h2>
-                    <p className="wishlist-price">
-                      {formatPrice(product.price)}
-                    </p>
-                    <p className="wishlist-stock">
-                      {isOutOfStock
-                        ? "Currently sold out"
-                        : `${product.stock} units left`}
-                    </p>
-                    <div className="wishlist-actions">
-                      <Link
-                        className="primary-btn small-btn"
-                        to={`/products/${product._id}`}
-                      >
-                        View details
-                      </Link>
-                      <button
-                        className="ghost-btn small-btn"
-                        disabled={isRemoving}
-                        onClick={() => handleRemove(product._id)}
-                        type="button"
-                      >
-                        {isRemoving ? "Removing..." : "Remove from Wishlist"}
-                      </button>
-                    </div>
-                  </div>
-                </article>
+                <ProductCard
+                  key={product._id}
+                  onRemove={handleRemove}
+                  product={product}
+                  removing={isRemoving}
+                />
               );
             })}
           </section>
