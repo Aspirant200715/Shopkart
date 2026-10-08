@@ -10,14 +10,14 @@ import PublicRoute from "./components/publicRoute";
 import ProductsPage from "./pages/ProductsPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import WishlistPage from "./pages/WishlistPage";
-import CartProvider from "./context/CartContext";
 import CartPage from "./pages/CartPage";
+import CartInitializer from "./features/cart/cartInitializer.jsx";
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <CartProvider>
+        <CartInitializer>
           <Routes>
             <Route
               path="/"
@@ -84,7 +84,7 @@ function App() {
               }
             />
           </Routes>
-        </CartProvider>
+          </CartInitializer>
       </AuthProvider>
     </BrowserRouter>
   );

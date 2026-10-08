@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { fetchProduct } from "../services/productApi";
 import formatPrice from "../utils/formatPrice";
-import useCart from "../context/useCart";
+import { useDispatch } from "react-redux";
+import { addToCart } from "../features/cart/cartSlice";
 import CartNavLink from "../components/CartNavLink";
 
 function ProductDetailsPage() {
@@ -13,7 +14,7 @@ function ProductDetailsPage() {
   const [added, setAdded] = useState(false);
   const [cartError, setCartError] = useState("");
   const [adding, setAdding] = useState(false);
-  const { addToCart } = useCart();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -115,12 +116,15 @@ function ProductDetailsPage() {
                   setAdding(true);
                   setCartError("");
                   try {
-                    await addToCart(product._id);
+                    await dispatch(addToCart(product._id)).unwrap();
                     setAdded(true);
                   } catch (requestError) {
                     setCartError(
-                      requestError.response?.data?.message ||
-                        "Unable to add product to cart.",
+                      typeof requestError === "string"
+                        ? requestError
+                        : requestError?.response?.data?.message ||
+                            requestError?.message ||
+                            "Unable to add product to cart.",
                     );
                   } finally {
                     setAdding(false);
@@ -138,13 +142,21 @@ function ProductDetailsPage() {
                 <div className="added-cart-actions">
                   <p className="added-note">Added to your cart.</p>
                   <Link className="view-cart-link" to="/cart">
-                    View cart <span className="arrow-icon arrow-right" aria-hidden="true" />
+                    View cart{" "}
+                    <span
+                      className="arrow-icon arrow-right"
+                      aria-hidden="true"
+                    />
                   </Link>
                 </div>
               )}
               {cartError && <p className="state-error">{cartError}</p>}
               <Link className="details-back" to="/products">
-                <svg className="back-arrow" viewBox="0 0 20 20" aria-hidden="true">
+                <svg
+                  className="back-arrow"
+                  viewBox="0 0 20 20"
+                  aria-hidden="true"
+                >
                   <path d="M16 10H4M9 5l-5 5 5 5" />
                 </svg>
                 Continue browsing

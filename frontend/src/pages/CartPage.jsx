@@ -1,17 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import useCart from "../context/useCart";
 import formatPrice from "../utils/formatPrice";
 import CartNavLink from "../components/CartNavLink";
+import { useDispatch, useSelector} from "react-redux";
+import {
+  updateQuantity,
+  removeFromCart,
+} from "../features/cart/cartSlice";
 
 function CartPage() {
-  const {
-    cartItems,
-    loading,
-    error,
-    updateQuantity,
-    removeFromCart,
-  } = useCart();
+  const dispatch = useDispatch();
+  const {cartItems,loading,error} = useSelector((state)=>state.cart)
   const [draftQuantities, setDraftQuantities] = useState({});
   const [quantityErrors, setQuantityErrors] = useState({});
   const [removeErrors, setRemoveErrors] = useState({});
@@ -36,7 +35,7 @@ function CartPage() {
     setQuantityErrors((current) => ({ ...current, [productId]: "" }));
 
     try {
-      await updateQuantity(productId, quantity);
+      await dispatch(updateQuantity({productId, quantity})).unwrap();
       setDraftQuantities((current) => ({ ...current, [productId]: quantity }));
     } catch (requestError) {
       setDraftQuantities((current) => ({
@@ -58,7 +57,7 @@ function CartPage() {
     setRemoveErrors((current) => ({ ...current, [productId]: "" }));
 
     try {
-      await removeFromCart(productId);
+      await dispatch(removeFromCart(productId)).unwrap();
     } catch (requestError) {
       setRemoveErrors((current) => ({
         ...current,
