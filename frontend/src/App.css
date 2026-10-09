@@ -196,6 +196,45 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .user-greeting { color: var(--muted); font-size: .78rem; font-weight: 800; }
 .catalog-page, .details-page { max-width: 1240px; margin: 54px auto 0; }
 .cart-page { max-width: 1240px; margin: 54px auto 0; }
+.orders-page { max-width: 1240px; margin: 54px auto 0; }
+.order-details-page { max-width: 1240px; margin: 54px auto 0; }
+.order-details-layout { display: grid; grid-template-columns: 1.35fr .65fr; gap: 18px; align-items: start; }
+.order-detail-card { padding: 22px; border: 1.5px solid var(--ink); border-radius: 9px; background: var(--card); box-shadow: 5px 5px 0 rgba(24,33,29,.18); }
+.order-detail-status { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.order-detail-status div { display: grid; gap: 4px; padding: 13px; border: 1px solid var(--line); border-radius: 7px; }
+.detail-label { color: var(--muted); font-size: .7rem; font-weight: 800; }
+.order-detail-card h2 { margin: 24px 0 14px; font-size: 1.4rem; letter-spacing: -.05em; }
+.order-detail-items { display: grid; gap: 10px; }
+.order-detail-item { display: grid; grid-template-columns: 64px 1fr auto; gap: 12px; align-items: center; padding: 10px; border: 1px solid var(--line); border-radius: 7px; }
+.order-item-image { width: 64px; height: 64px; object-fit: cover; border-radius: 4px; background: var(--paper); }
+.order-item-image-placeholder { display: grid; place-content: center; gap: 3px; border: 1px solid var(--line); color: var(--ink); text-align: center; background: linear-gradient(135deg, #e9ef69, #c7f36b); }
+.order-item-image-placeholder span { font-size: 1.5rem; font-weight: 900; line-height: 1; }
+.order-item-image-placeholder small { font-size: .45rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+.order-detail-item h3 { margin: 0 0 5px; font-size: .95rem; }
+.order-detail-item p, .shipping-card p { margin: 4px 0 0; color: var(--muted); font-size: .8rem; line-height: 1.5; }
+.order-detail-total { display: flex; justify-content: space-between; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 1.1rem; }
+.shipping-card h2 { margin-top: 0; }
+.order-view-link { margin-top: 18px; }
+.orders-list { display: grid; gap: 16px; }
+.order-card { padding: 22px; border: 1.5px solid var(--ink); border-radius: 9px; background: var(--card); box-shadow: 5px 5px 0 rgba(24,33,29,.18); }
+.order-card-heading { display: flex; align-items: start; justify-content: space-between; gap: 18px; }
+.order-card-heading h2 { margin: 0; font-size: 1.65rem; letter-spacing: -.06em; }
+.order-status { padding: 7px 10px; border: 1px solid var(--ink); border-radius: 999px; background: var(--lime); color: var(--ink); font-size: .68rem; font-weight: 900; }
+.order-card-details { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+.order-card-details div { display: grid; gap: 4px; }
+.order-card-details span { color: var(--muted); font-size: .72rem; font-weight: 800; }
+.order-card-details strong { font-size: .95rem; }
+.order-progress { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+.order-progress h3 { margin: 0 0 12px; font-size: .9rem; }
+.order-progress-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.order-progress-step { display: flex; align-items: center; gap: 6px; min-width: 0; color: var(--muted); font-size: .68rem; font-weight: 900; }
+.order-progress-marker { display: grid; width: 22px; height: 22px; flex: 0 0 22px; place-items: center; border: 1px solid var(--line); border-radius: 50%; background: var(--paper); }
+.order-progress-step.is-complete { color: var(--ink); }
+.order-progress-step.is-complete .order-progress-marker { border-color: var(--ink); background: var(--lime); }
+.order-progress-step.is-current { color: var(--coral); }
+.order-progress-step.is-current .order-progress-marker { border-color: var(--coral); background: var(--coral); color: var(--card); }
+.order-items { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.order-items span { padding: 7px 9px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: .75rem; font-weight: 800; }
 .cart-layout { display: grid; grid-template-columns: 1.5fr .7fr; gap: 20px; align-items: start; }
 .cart-list { display: grid; gap: 14px; }
 .cart-item, .cart-summary { border: 1.5px solid var(--ink); border-radius: 9px; background: var(--card); box-shadow: 5px 5px 0 rgba(24,33,29,.18); }
@@ -220,6 +259,12 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 .cart-summary { display: grid; gap: 16px; padding: 22px; }
 .cart-summary > div { display: flex; justify-content: space-between; }
 .cart-total { padding-top: 16px; border-top: 1px solid var(--line); font-size: 1.2rem; }
+.cart-summary > .shipping-form { display: grid; grid-template-columns: 1fr; justify-content: initial; gap: 10px; }
+.shipping-form h2 { margin: 0 0 2px; font-size: 1.1rem; letter-spacing: -.04em; }
+.shipping-field { display: grid; grid-template-columns: 1fr; gap: 4px; }
+.shipping-field span { color: var(--muted); font-size: .7rem; font-weight: 800; }
+.shipping-field input { width: 100%; min-width: 0; border: 1.5px solid var(--line); border-radius: 6px; padding: 10px; background: var(--paper); color: var(--ink); font: inherit; }
+.shipping-field input:focus { border-color: var(--ink); outline: 2px solid rgba(199,243,107,.7); }
 .added-cart-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 14px; }
 .added-cart-actions .added-note { margin: 0; }
 .view-cart-link { display: inline-flex; align-items: center; gap: 5px; padding: 8px 11px; border: 1px solid var(--ink); border-radius: 999px; background: var(--lime); color: var(--ink); font-size: .78rem; font-weight: 900; text-decoration: none; }
@@ -337,6 +382,8 @@ button:disabled { cursor: not-allowed; opacity: .55; }
   .catalog-heading { align-items: start; flex-direction: column; gap: 18px; }
   .catalog-heading h1 { max-width: 100%; font-size: clamp(2.8rem, 13vw, 4.8rem); line-height: .98; letter-spacing: -.045em; }
   .catalog-toolbar, .catalog-grid, .details-layout { grid-template-columns: 1fr; }
+  .order-details-layout { grid-template-columns: 1fr; }
+  .order-progress-steps { grid-template-columns: repeat(2, 1fr); row-gap: 10px; }
   .wishlist-grid { grid-template-columns: 1fr; }
   .catalog-toolbar { gap: 9px; }
   .catalog-image-wrap { height: 230px; }

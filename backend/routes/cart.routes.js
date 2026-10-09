@@ -19,3 +19,10 @@ cartRoutes.patch("/:productId",isAuthenticated,updateCartQuantity);
 cartRoutes.delete("/:productId",isAuthenticated,removeFromCart);
 
 export default cartRoutes;
+
+
+
+
+
+
+

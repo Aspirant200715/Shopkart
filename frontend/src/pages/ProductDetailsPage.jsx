@@ -55,6 +55,7 @@ function ProductDetailsPage() {
           </Link>
           <Link to="/wishlist">Wishlist</Link>
           <CartNavLink />
+          <Link to="/orders">Orders</Link>
           <Link to="/logout">Logout</Link>
         </nav>
         <Link to="/products" className="ghost-btn small-btn">

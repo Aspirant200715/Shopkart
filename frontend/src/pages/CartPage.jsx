@@ -2,8 +2,10 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import formatPrice from "../utils/formatPrice";
 import CartNavLink from "../components/CartNavLink";
-import { useDispatch, useSelector} from "react-redux";
+import { createPaymentOrder, verifyPayment } from "../services/orderApi";
+import { useDispatch, useSelector } from "react-redux";
 import {
+  clearCart,
   updateQuantity,
   removeFromCart,
 } from "../features/cart/cartSlice";
@@ -14,6 +16,16 @@ function CartPage() {
   const [draftQuantities, setDraftQuantities] = useState({});
   const [quantityErrors, setQuantityErrors] = useState({});
   const [removeErrors, setRemoveErrors] = useState({});
+  const [shippingAddress, setShippingAddress] = useState({
+    fullName: "",
+    phone: "",
+    addressLine1: "",
+    city: "",
+    state: "",
+    pincode: "",
+  });
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
 
   const total = cartItems.reduce(
     (sum, item) => sum + (item.product?.price || 0) * item.quantity,
@@ -68,6 +80,75 @@ function CartPage() {
     }
   };
 
+  const handleAddressChange = (event) => {
+    const { name, value } = event.target;
+
+    setShippingAddress((current) => ({
+      ...current,
+      [name]: value,
+    }));
+  };
+
+  const handleCheckout = async () => {
+    const hasCompleteAddress = Object.values(shippingAddress).every(
+      (value) => value.trim() !== "",
+    );
+
+    if (!hasCompleteAddress) {
+      setCheckoutError("Complete your shipping address before checkout.");
+      return;
+    }
+
+    setCheckoutLoading(true);
+    setCheckoutError("");
+
+    try {
+      const data = await createPaymentOrder(shippingAddress);
+
+      if (!window.Razorpay) {
+        throw new Error("Payment checkout is unavailable. Please try again.");
+      }
+
+      const razorpay = new window.Razorpay({
+        key: data.razorpay.keyId,
+        amount: data.razorpay.amount,
+        currency: data.razorpay.currency,
+        name: "ShopKart",
+        description: "ShopKart Order",
+        order_id: data.razorpay.orderId,
+        handler: async (response) => {
+          try {
+            await verifyPayment(response);
+            dispatch(clearCart());
+          } catch (requestError) {
+            setCheckoutError(
+              requestError.response?.data?.message ||
+                requestError.message ||
+                "Payment verification failed. Please contact support.",
+            );
+          }
+        },
+        prefill: {
+          name: shippingAddress.fullName,
+          contact: shippingAddress.phone,
+        },
+        theme: {
+          color: "#c7f36b",
+        },
+      });
+
+      razorpay.open();
+    } catch (requestError) {
+      setCheckoutError(
+        requestError.response?.data?.message ||
+          requestError.message ||
+          "Unable to start checkout.",
+      );
+    } finally {
+      setCheckoutLoading(false);
+    }
+  };
+
   return (
     <div className="home-shell catalog-shell">
       <header className="topbar">
@@ -79,6 +160,7 @@ function CartPage() {
           <Link to="/products">Products</Link>
           <Link to="/wishlist">Wishlist</Link>
           <CartNavLink />
+          <Link to="/orders">Orders</Link>
           <Link to="/logout">Logout</Link>
         </nav>
       </header>
@@ -245,8 +327,40 @@ function CartPage() {
                 <span>Total</span>
                 <strong>{formatPrice(total)}</strong>
               </div>
-              <button className="primary-btn wide-btn" type="button">
-                Checkout
+              <div className="shipping-form">
+                <h2>Shipping address</h2>
+                {[
+                  ["fullName", "Full name", "text"],
+                  ["phone", "Phone", "tel"],
+                  ["addressLine1", "Address", "text"],
+                  ["city", "City", "text"],
+                  ["state", "State", "text"],
+                  ["pincode", "Pincode", "text"],
+                ].map(([name, label, type]) => (
+                  <label key={name} className="shipping-field">
+                    <span>{label}</span>
+                    <input
+                      name={name}
+                      type={type}
+                      value={shippingAddress[name]}
+                      onChange={handleAddressChange}
+                      required
+                    />
+                  </label>
+                ))}
+              </div>
+              {checkoutError && (
+                <p className="quantity-error" role="alert">
+                  {checkoutError}
+                </p>
+              )}
+              <button
+                className="primary-btn wide-btn"
+                type="button"
+                onClick={handleCheckout}
+                disabled={checkoutLoading}
+              >
+                {checkoutLoading ? "Preparing checkout..." : "Checkout"}
               </button>
             </aside>
           </div>
