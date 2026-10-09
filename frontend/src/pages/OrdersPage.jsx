@@ -51,6 +51,7 @@ function OrdersPage() {
           <Link className="active-nav" to="/orders">
             Orders
           </Link>
+          {customer?.role === "admin" && <Link to="/admin">Admin</Link>}
           <Link to="/logout">Logout</Link>
         </nav>
         <div className="nav-actions">

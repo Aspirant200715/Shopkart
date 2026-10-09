@@ -14,10 +14,16 @@ import CartPage from "./pages/CartPage";
 import OrdersPage from "./pages/OrdersPage";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
 import CartInitializer from "./features/cart/cartInitializer.jsx";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import AdminRoute from "./components/adminRoute";
+import AdminPage from "./pages/AdminPage";
+import InformationPage from "./pages/InformationPage";
 
 function App() {
   return (
     <BrowserRouter>
+      <ToastContainer position="bottom-left" />
       <AuthProvider>
         <CartInitializer>
           <Routes>
@@ -45,6 +51,10 @@ function App() {
                 </PublicRoute>
               }
             />
+            <Route path="/privacy" element={<InformationPage />} />
+            <Route path="/terms" element={<InformationPage />} />
+            <Route path="/shipping-returns" element={<InformationPage />} />
+            <Route path="/contact" element={<InformationPage />} />
             <Route
               path="/logout"
               element={
@@ -99,6 +109,14 @@ function App() {
                 <ProtectedRoute>
                   <OrderDetailsPage />
                 </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <AdminPage />
+                </AdminRoute>
               }
             />
           </Routes>

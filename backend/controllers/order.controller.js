@@ -6,10 +6,16 @@ import Product from "../models/product.model.js";
 import Razorpay from "razorpay";
 import crypto from "crypto";
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+let razorpay;
+const getRazorpay = () => {
+  if (!razorpay) {
+    razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+  }
+  return razorpay;
+};
 
 export const createPaymentOrder = async (req, res) => {
   try {
@@ -96,7 +102,8 @@ export const createPaymentOrder = async (req, res) => {
       orderStatus: "PENDING_PAYMENT",
     });
 
-    const razorpayOrder = await razorpay.orders.create({
+    const rzp = getRazorpay();
+    const razorpayOrder = await rzp.orders.create({
       amount: Math.round(totalAmount * 100),
       currency: "INR",
       receipt: order._id.toString(),
@@ -207,7 +214,7 @@ export const verifyPayment = async (req, res) => {
               stock: { $gte: item.quantity },
             },
             { $inc: { stock: -item.quantity } },
-            { new: true, session },
+            { returnDocument: "after", session },
           );
 
           if (!updatedProduct) {
@@ -328,7 +335,6 @@ export const updateOrderStatus = async (req, res) => {
 
     const order = await Order.findOne({
       _id: id,
-      user: req.user._id,
     });
 
     if (!order) {

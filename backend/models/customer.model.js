@@ -18,6 +18,11 @@ const customerSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  role: {
+    type: String,
+    enum: ["customer", "admin"],
+    default: "customer",
+  },
   createdAt: {
     type: Date,
     default: Date.now(),
@@ -50,7 +55,6 @@ cart: [
 const Customer = mongoose.model("Customer", customerSchema);
 
 export default Customer;
-
 
 
 

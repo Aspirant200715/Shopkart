@@ -4,6 +4,7 @@ import useAuth from "../context/useAuth";
 import CartNavLink from "../components/CartNavLink";
 import { fetchProducts } from "../services/productApi";
 import formatPrice from "../utils/formatPrice";
+import StoreFooter from "../components/StoreFooter";
 
 const benefits = [
   { target: 24, suffix: "h", label: "fast dispatch" },
@@ -25,6 +26,19 @@ const reviews = [
     author: "Aisha T.",
   },
 ];
+
+const collectionImages = [
+  "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=900&q=85",
+  "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=900&q=85",
+  "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=85",
+];
+
+const heroImages = {
+  featured:
+    "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=700&q=85",
+  trending:
+    "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=700&q=85",
+};
 
 function AnimatedMetric({ target, decimals = 0, suffix = "" }) {
   const [value, setValue] = useState(() =>
@@ -108,7 +122,7 @@ function HomePage() {
   return (
     <div className="home-shell">
       <header className="topbar">
-        <Link to="/" className="brand brand-dark">
+        <Link to="/" className="brand ">
           <span className="brand-mark">S</span>
           Shopsy
         </Link>
@@ -121,6 +135,7 @@ function HomePage() {
           <Link to="/wishlist">Wishlist</Link>
           <CartNavLink />
           <Link to="/orders">Orders</Link>
+          {customer?.role === "admin" && <Link to="/admin">Admin</Link>}
           <Link to="/logout">Logout</Link>
         </nav>
 
@@ -172,7 +187,11 @@ function HomePage() {
           </div>
 
           <div className="hero-visual-wrap">
-            <div className="hero-product-card big-card">
+            <div
+              className="hero-product-card big-card"
+              style={{ backgroundImage: `url(${heroImages.featured})` }}
+            >
+              <div className="hero-card-scrim" />
               <span className="mini-label">Best seller</span>
               <h3>Aura Chair</h3>
               <strong>$289</strong>
@@ -184,7 +203,11 @@ function HomePage() {
               <small>Top rated</small>
             </div>
 
-            <div className="hero-product-card small-card">
+            <div
+              className="hero-product-card small-card"
+              style={{ backgroundImage: `url(${heroImages.trending})` }}
+            >
+              <div className="hero-card-scrim" />
               <span className="mini-label">Trending</span>
               <h3>Desk set</h3>
               <strong>$149</strong>
@@ -205,8 +228,21 @@ function HomePage() {
         </section>
 
         <section className="collection-grid">
-          {collections.map((item) => (
-            <article key={item.name} className={`collection-card ${item.tone}`}>
+          {collections.map((item, index) => (
+            <article
+              key={item.name}
+              className={`collection-card ${item.tone}`}
+              style={{ backgroundImage: `url(${collectionImages[index]})` }}
+            >
+              <img
+                className="collection-card-image"
+                src={collectionImages[index]}
+                alt={`${item.name} collection`}
+                onError={(event) => {
+                  event.currentTarget.style.display = "none";
+                }}
+              />
+              <div className="collection-card-scrim" />
               <span>{item.tag}</span>
               <h3>{item.name}</h3>
               <Link to="/products">Shop collection <span aria-hidden="true">↗</span></Link>
@@ -217,7 +253,7 @@ function HomePage() {
         <section className="product-showcase">
           <div className="section-heading">
             <div>
-              <p className="eyebrow eyebrow-dark">Popular picks</p>
+              <p className="eyebrow ">Popular picks</p>
               <h2>Curated for real life</h2>
             </div>
             <Link to="/products" className="mini-link">
@@ -248,6 +284,14 @@ function HomePage() {
             {featuredProducts.map((product) => (
               <article key={product._id} className="product-card">
                 <div className="product-visual product-visual-live">
+                  <img
+                    className="product-visual-image"
+                    src={product.image}
+                    alt={product.name}
+                    onError={(event) => {
+                      event.currentTarget.style.display = "none";
+                    }}
+                  />
                   <span>{product.stock > 0 ? "In stock" : "Sold out"}</span>
                 </div>
                 <div className="product-info">
@@ -268,7 +312,7 @@ function HomePage() {
 
         <section className="promo-band">
           <div className="promo-copy">
-            <p className="eyebrow eyebrow-dark">Why Shopsy</p>
+            <p className="eyebrow ">Why Shopsy</p>
             <h2>Beautiful essentials with everyday ease.</h2>
             <p>
               Every product is thoughtfully selected to bring warmth, clarity,
@@ -291,7 +335,7 @@ function HomePage() {
         <section className="reviews-wrap">
           <div className="section-heading compact-heading">
             <div>
-              <p className="eyebrow eyebrow-dark">Loved by shoppers</p>
+              <p className="eyebrow ">Loved by shoppers</p>
               <h2>What people are saying</h2>
             </div>
           </div>
@@ -309,7 +353,7 @@ function HomePage() {
 
         <section className="newsletter-card">
           <div>
-            <p className="eyebrow eyebrow-dark">Stay in the loop</p>
+            <p className="eyebrow ">Stay in the loop</p>
             <h2>Get fresh drops, early access, and exclusive offers.</h2>
           </div>
 
@@ -318,6 +362,7 @@ function HomePage() {
           </Link>
         </section>
       </main>
+      <StoreFooter />
     </div>
   );
 }

@@ -9,6 +9,7 @@ import {
   updateQuantity,
   removeFromCart,
 } from "../features/cart/cartSlice";
+import { toast } from "react-toastify";
 
 function CartPage() {
   const dispatch = useDispatch();
@@ -49,6 +50,7 @@ function CartPage() {
     try {
       await dispatch(updateQuantity({productId, quantity})).unwrap();
       setDraftQuantities((current) => ({ ...current, [productId]: quantity }));
+      toast.success("Cart quantity updated.");
     } catch (requestError) {
       setDraftQuantities((current) => ({
         ...current,
@@ -62,6 +64,10 @@ function CartPage() {
           requestError.response?.data?.message ||
           `Only ${product.stock} units are currently in stock.`,
       }));
+      toast.error(
+        requestError.response?.data?.message ||
+          `Only ${product.stock} units are currently in stock.`,
+      );
     }
   };
 
@@ -70,6 +76,7 @@ function CartPage() {
 
     try {
       await dispatch(removeFromCart(productId)).unwrap();
+      toast.success("Item removed from your cart.");
     } catch (requestError) {
       setRemoveErrors((current) => ({
         ...current,
@@ -77,6 +84,10 @@ function CartPage() {
           requestError.response?.data?.message ||
           "Unable to remove this item. Please try again.",
       }));
+      toast.error(
+        requestError.response?.data?.message ||
+          "Unable to remove this item. Please try again.",
+      );
     }
   };
 
@@ -120,12 +131,14 @@ function CartPage() {
           try {
             await verifyPayment(response);
             dispatch(clearCart());
+            toast.success("Order placed successfully!");
           } catch (requestError) {
-            setCheckoutError(
+            const message =
               requestError.response?.data?.message ||
                 requestError.message ||
-                "Payment verification failed. Please contact support.",
-            );
+                "Payment verification failed. Please contact support.";
+            setCheckoutError(message);
+            toast.error(message);
           }
         },
         prefill: {
@@ -140,6 +153,11 @@ function CartPage() {
       razorpay.open();
     } catch (requestError) {
       setCheckoutError(
+        requestError.response?.data?.message ||
+          requestError.message ||
+          "Unable to start checkout.",
+      );
+      toast.error(
         requestError.response?.data?.message ||
           requestError.message ||
           "Unable to start checkout.",
@@ -208,9 +226,16 @@ function CartPage() {
                     <div className="cart-item-image">
                       <img
                         src={product.image}
-                        alt=""
-                        onError={(event) => event.currentTarget.remove()}
+                        alt={product.name}
+                        onError={(event) => {
+                          event.currentTarget.style.display = "none";
+                          event.currentTarget.nextElementSibling?.removeAttribute("hidden");
+                        }}
                       />
+                      <div className="cart-item-image-placeholder" hidden>
+                        <strong>{product.name.slice(0, 1).toUpperCase()}</strong>
+                        <small>Shopsy item</small>
+                      </div>
                     </div>
                     <div className="cart-item-copy">
                       <p className="catalog-category">{product.category}</p>

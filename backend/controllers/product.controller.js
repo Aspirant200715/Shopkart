@@ -81,3 +81,43 @@ export const getProduct = async (req, res) => {
       .json({ success: false, message: "Unable to load product" });
   }
 };
+
+export const updateProduct = async (req, res) => {
+  try {
+    const { _id, createdAt, updatedAt, ...productData } = req.body;
+    const product = await Product.findByIdAndUpdate(req.params.id, productData, {
+      returnDocument: "after",
+      runValidators: true,
+    });
+
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    return res.status(200).json({ success: true, product });
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide valid product details",
+        errors: Object.values(error.errors).map(({ message }) => message),
+      });
+    }
+
+    return res.status(500).json({ success: false, message: "Unable to update product" });
+  }
+};
+
+export const deleteProduct = async (req, res) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    return res.status(200).json({ success: true, message: "Product deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: "Unable to delete product" });
+  }
+};

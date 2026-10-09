@@ -5,6 +5,7 @@ import formatPrice from "../utils/formatPrice";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../features/cart/cartSlice";
 import CartNavLink from "../components/CartNavLink";
+import { toast } from "react-toastify";
 
 function ProductDetailsPage() {
   const { id } = useParams();
@@ -82,11 +83,14 @@ function ProductDetailsPage() {
         {!loading && !error && product && (
           <article className="details-layout">
             <div className="details-image-panel">
-              <div className="details-image-fallback">{product.name}</div>
+              <div className="details-image-fallback" hidden>{product.name}</div>
               <img
                 src={product.image}
-                alt=""
-                onError={(event) => event.currentTarget.remove()}
+                alt={product.name}
+                onError={(event) => {
+                  event.currentTarget.style.display = "none";
+                  event.currentTarget.previousElementSibling?.removeAttribute("hidden");
+                }}
               />
             </div>
             <div className="details-copy">
@@ -119,14 +123,15 @@ function ProductDetailsPage() {
                   try {
                     await dispatch(addToCart(product._id)).unwrap();
                     setAdded(true);
+                    toast.success("Added to cart");
                   } catch (requestError) {
-                    setCartError(
-                      typeof requestError === "string"
+                    const msg = typeof requestError === "string"
                         ? requestError
                         : requestError?.response?.data?.message ||
                             requestError?.message ||
-                            "Unable to add product to cart.",
-                    );
+                            "Unable to add product to cart.";
+                    setCartError(msg);
+                    toast.error(msg);
                   } finally {
                     setAdding(false);
                   }

@@ -4,6 +4,7 @@ import useAuth from "../context/useAuth";
 import ProductCard from "../components/ProductCard";
 import { fetchProducts } from "../services/productApi";
 import CartNavLink from "../components/CartNavLink";
+import StoreFooter from "../components/StoreFooter";
 
 const defaultCategories = ["Electronics", "Fashion", "Books", "Home"];
 
@@ -24,6 +25,7 @@ function StoreHeader() {
         <Link to="/wishlist">Wishlist</Link>
         <CartNavLink />
         <Link to="/orders">Orders</Link>
+        {customer?.role === "admin" && <Link to="/admin">Admin</Link>}
         <Link to="/logout">Logout</Link>
       </nav>
       <div className="nav-actions">
@@ -169,6 +171,7 @@ function ProductsPage() {
           </section>
         )}
       </main>
+      <StoreFooter />
     </div>
   );
 }

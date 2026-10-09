@@ -4,6 +4,7 @@ import useAuth from "../context/useAuth";
 import { fetchWishlist, removeFromWishlist } from "../services/productApi";
 import CartNavLink from "../components/CartNavLink";
 import ProductCard from "../components/ProductCard";
+import { toast } from "react-toastify";
 
 function WishlistPage() {
   const { customer } = useAuth();
@@ -44,11 +45,13 @@ function WishlistPage() {
       setWishlist((currentWishlist) =>
         currentWishlist.filter((product) => product._id !== productId),
       );
+      toast.success("Removed from your wishlist.");
     } catch (requestError) {
-      setError(
+      const message =
         requestError.response?.data?.message ||
-          "Unable to remove product. Please try again.",
-      );
+        "Unable to remove product. Please try again.";
+      setError(message);
+      toast.error(message);
     } finally {
       setRemovingId("");
     }
@@ -69,6 +72,7 @@ function WishlistPage() {
           </Link>
           <CartNavLink />
           <Link to="/orders">Orders</Link>
+          {customer?.role === "admin" && <Link to="/admin">Admin</Link>}
           <Link to="/logout">Logout</Link>
         </nav>
         <div className="nav-actions">

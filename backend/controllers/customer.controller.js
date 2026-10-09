@@ -9,29 +9,25 @@ const cokkieOptions = {
 };
 
 export const registerCustomer = async (req, res) => {
-  const { fullname, email, password, phone } = req.body;
-  //validation
-
   try {
+    const fullname = req.body.fullname?.trim();
+    const email = req.body.email?.trim().toLowerCase();
+    const password = req.body.password;
+    const phone = req.body.phone?.trim();
+
     if (!fullname || !email || !password || !phone) {
       return res.status(400).json({ message: "All fields required" });
-    }
-
-    const customerexists = await Customer.findOne({ fullname });
-
-    if (customerexists) {
-      return res.status(400).json({ message: "Customer already exists" });
     }
 
     const emailexists = await Customer.findOne({ email });
 
     if (emailexists) {
-      return res.status(409).json({ message: "Email_id already exists" });
+      return res.status(409).json({ message: "An account with this email already exists" });
     }
 
-    if (password.length <= 6) {
+    if (password.length < 7) {
       return res.status(400).json({
-        message: "Password length should be greater than 6 characters",
+        message: "Password must be at least 7 characters",
       });
     }
 
@@ -55,17 +51,25 @@ export const registerCustomer = async (req, res) => {
         fullname: newCustomer.fullname,
         email: newCustomer.email,
         phone: newCustomer.phone,
+        role: newCustomer.role,
       },
     });
   } catch (error) {
     console.log(error);
+    if (error.code === 11000) {
+      return res.status(409).json({ message: "An account with this email already exists" });
+    }
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ message: "Please check the account details and try again" });
+    }
     res.status(500).json({ message: "Unable to register Customer" });
   }
 };
 
 export const LoginCustomer = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const email = req.body.email?.trim().toLowerCase();
+    const { password } = req.body;
     if (!email || !password) {
       return res.status(401).json({ message: "All fields are required" });
     }
@@ -95,6 +99,7 @@ export const LoginCustomer = async (req, res) => {
         fullname: Customerexists.fullname,
         email: Customerexists.email,
         phone: Customerexists.phone,
+        role: Customerexists.role,
       },
     });
   } catch (error) {
@@ -111,6 +116,7 @@ export const getCustomer = (req, res) => {
       fullname: req.user.fullname,
       email: req.user.email,
       phone: req.user.phone,
+      role: req.user.role,
     },
   });
 };

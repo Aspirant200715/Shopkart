@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToWishlist } from "../services/productApi";
 import { addToCart, updateQuantity } from "../features/cart/cartSlice";
 import formatPrice from "../utils/formatPrice";
+import { toast } from "react-toastify";
 
 function ProductCard({ product, onRemove, removing = false }) {
   const isOutOfStock = product.stock === 0;
@@ -29,13 +30,15 @@ function ProductCard({ product, onRemove, removing = false }) {
     try {
       await addToWishlist(product._id);
       setAdded(true);
+      toast.success(`${product.name} added to your wishlist.`);
     } catch (requestError) {
-      setError(
+      const message =
         requestError.response?.status === 409
           ? "Already in your wishlist."
           : requestError.response?.data?.message ||
-              "Unable to save product. Please try again.",
-      );
+            "Unable to save product. Please try again.";
+      setError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }
@@ -59,8 +62,18 @@ function ProductCard({ product, onRemove, removing = false }) {
           updateQuantity({ productId: product._id, quantity: nextQuantity }),
         ).unwrap();
       }
+      toast.success(
+        quantity > 0
+          ? `${product.name} quantity updated.`
+          : `${product.name} added to your cart.`,
+      );
     } catch (requestError) {
       setError(
+        typeof requestError === "string"
+          ? requestError
+          : requestError?.message || "Unable to update your cart.",
+      );
+      toast.error(
         typeof requestError === "string"
           ? requestError
           : requestError?.message || "Unable to update your cart.",
