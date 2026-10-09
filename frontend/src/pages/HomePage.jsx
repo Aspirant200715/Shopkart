@@ -310,6 +310,43 @@ function HomePage() {
           )}
         </section>
 
+        <section className="admin-preview-section">
+          <div className="admin-preview-copy">
+            <p className="eyebrow">For the people behind Shopsy</p>
+            <h2>A calmer way to run your store.</h2>
+            <p>
+              The Admin Studio keeps products, orders, customers, and revenue
+              in one clear workspace.
+            </p>
+            {customer?.role === "admin" && (
+              <Link to="/admin" className="primary-btn small-btn">
+                Open Admin Studio <span aria-hidden="true">↗</span>
+              </Link>
+            )}
+          </div>
+          <div className="admin-preview-window" aria-label="Preview of the Shopsy Admin Studio">
+            <div className="admin-preview-topbar">
+              <strong><span className="brand-mark">S</span> Shopsy</strong>
+              <span>ADMIN ACCESS</span>
+            </div>
+            <div className="admin-preview-heading">
+              <div><small>OPERATIONS / 2026</small><h3>Good morning.</h3></div>
+              <i aria-hidden="true" />
+            </div>
+            <div className="admin-preview-stats">
+              <div><small>CATALOG</small><strong>24</strong><span>live products</span></div>
+              <div><small>ORDERS</small><strong>128</strong><span>all-time orders</span></div>
+              <div className="admin-preview-revenue"><small>REVENUE</small><strong>₹4.8L</strong><span>paid orders</span></div>
+            </div>
+            <div className="admin-preview-table">
+              <div><strong>Live catalog</strong><span>Products</span></div>
+              <p><b>Aura Lounge Chair</b><span>In stock</span></p>
+              <p><b>Linen Desk Set</b><span>In stock</span></p>
+              <p><b>Teal Carryall Bag</b><span>Low stock</span></p>
+            </div>
+          </div>
+        </section>
+
         <section className="promo-band">
           <div className="promo-copy">
             <p className="eyebrow ">Why Shopsy</p>

@@ -163,6 +163,63 @@
   color: #dce4db;
 }
 
+.adminTeaser {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid rgba(199, 243, 107, .45);
+  border-radius: 10px;
+  background: rgba(12, 28, 21, .62);
+  box-shadow: 4px 4px 0 rgba(8, 20, 15, .18);
+}
+
+.adminTeaserLabel {
+  display: block;
+  margin-bottom: 5px;
+  color: #c7f36b;
+  font-size: .62rem;
+  font-weight: 900;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.adminTeaser strong {
+  display: block;
+  color: #f4f6de;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.05rem;
+  line-height: 1.05;
+}
+
+.adminTeaserTiles {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.adminTeaserTiles span {
+  display: grid;
+  gap: 2px;
+  min-width: 48px;
+  padding: 7px 6px;
+  border: 1px solid rgba(224, 242, 219, .2);
+  border-radius: 6px;
+  color: #c7f36b;
+  font-size: .78rem;
+  font-weight: 900;
+  text-align: center;
+}
+
+.adminTeaserTiles strong {
+  color: #cbd9cf;
+  font-family: inherit;
+  font-size: .48rem;
+  font-weight: 700;
+}
+
 .footer {
   position: relative;
   z-index: 1;
@@ -237,6 +294,11 @@
 
   .logo {
     font-size: 1.4rem;
+  }
+
+  .adminTeaser {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .logoIcon {

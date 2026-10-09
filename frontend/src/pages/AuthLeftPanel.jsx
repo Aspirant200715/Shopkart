@@ -49,6 +49,17 @@ function AuthLeftPanel({ variant = "login" }) {
             <div className={styles.featureDesc}>Made for your routine</div>
           </div>
         </div>
+        <div className={styles.adminTeaser}>
+          <div>
+            <span className={styles.adminTeaserLabel}>Admin Studio</span>
+            <strong>Catalog, orders &amp; revenue in one view.</strong>
+          </div>
+          <div className={styles.adminTeaserTiles} aria-hidden="true">
+            <span>24<strong>Items</strong></span>
+            <span>128<strong>Orders</strong></span>
+            <span>₹4.8L<strong>Sales</strong></span>
+          </div>
+        </div>
       </div>
 
       <div className={styles.footer} style={{ position: "relative", zIndex: 1 }}>
