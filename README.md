@@ -2,7 +2,7 @@
 
 Shopsy is a full-stack MERN e-commerce application for curated home, lifestyle, stationery, and electronics products. It includes customer authentication, catalog browsing, cart and wishlist management, Razorpay checkout, order tracking, stock-safe payments, and a protected admin dashboard.
 
-![Shopsy authentication artwork](./frontend/src/assets/auth-hero.svg)
+![Shopsy frontend login preview](./docs/screenshots/login.png)
 
 > **Project status:** ready for local development and deployment preparation. Replace example support contact details and configure production environment variables before publishing.
 
@@ -185,17 +185,17 @@ The application uses a dark green, lime, coral, and editorial cream visual syste
 
 ### Authentication
 
-![Shopsy shopping bag and authentication artwork](https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=900&q=85)
+![Shopsy login screen](./docs/screenshots/login.png)
 
-Login and signup use the shared [AuthLeftPanel.jsx](./frontend/src/pages/AuthLeftPanel.jsx), including the Shopsy logo, shopping-bag visual, trust benefits, and an Admin Studio glimpse.
+The login screen uses the shared [AuthLeftPanel.jsx](./frontend/src/pages/AuthLeftPanel.jsx), including the Shopsy branding, trust benefits, and Admin Studio glimpse.
 
-### Storefront imagery
+### Signup screen
 
-![Shopsy storefront product imagery](https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=900&q=85)
+![Shopsy signup screen](./docs/screenshots/signup.png)
 
-Homepage hero and collection cards use curated image URLs. Product records also store an image URL so the same image can appear in catalog cards, cart, wishlist, product details, and order snapshots.
+The signup screen shares the same frontend visual system and provides the customer registration flow.
 
-> For production, consider downloading approved images into `frontend/src/assets/` or using a controlled image CDN instead of relying on third-party hotlinks.
+Homepage hero, collection, and product cards use curated product imagery. Product records also store an image URL so the same image can appear in catalog cards, cart, wishlist, product details, and order snapshots.
 
 ## Authentication and roles
 
